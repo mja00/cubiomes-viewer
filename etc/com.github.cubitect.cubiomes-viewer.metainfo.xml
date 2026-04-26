@@ -13,6 +13,16 @@
   </description>
 
   <releases>
+    <release version="4.1.3" date="2026-04-26">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Renamed 1.21 WD to 1.21.4 (Garden Awakens) now that the version has shipped</li>
+          <li>Added Minecraft versions 1.21.5 through 1.21.11 and 26.1 through 26.1.2</li>
+          <li>Mansions now generate in pale_garden for 1.21.5+</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.1.2" date="2024-11-10">
       <description>
         <p>Changes:</p>
