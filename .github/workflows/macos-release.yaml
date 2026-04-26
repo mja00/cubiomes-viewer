@@ -29,7 +29,9 @@ jobs:
           host:       'mac'
           target:     'desktop'
           arch:       'clang_64'
-          modules:    'qttools'
+          # qttools (lrelease, lupdate, etc.) is shipped as an archive of the
+          # base install on Qt 6, not a selectable module. The default
+          # archives list already includes it; do not pass `modules: qttools`.
           cache:      true
 
       - name: Build
