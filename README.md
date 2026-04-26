@@ -5,30 +5,71 @@ seed-finding utilities provided by [cubiomes](https://github.com/Cubitect/cubiom
 and a map viewer for the Minecraft biomes and structure generation.
 
 The tool is designed for high performance and supports Minecraft Java Edition
-main releases up to 1.21.
+main releases up to **26.1.2** (the new year-based versioning scheme that
+replaces 1.21.x).
+
+
+## About this fork
+
+This is a fork of [Cubitect/cubiomes-viewer](https://github.com/Cubitect/cubiomes-viewer)
+maintained by [mja00](https://github.com/mja00) that extends version support
+beyond upstream. Compared to upstream it adds:
+
+- **Minecraft 1.21.4 through 26.1.2** as selectable versions (upstream
+  currently stops at 1.21.3 + a `1.21 WD` placeholder).
+- **An accurate 1.21.5 biome tree** (`btree21_5.h`) reflecting the pale_garden
+  expansion into the dark_forest plateau cell, and the matching mansion
+  biome rule update.
+- **A pure-Python biome-tree generator** at
+  [`cubiomes/docs/btreegen.py`](https://github.com/mja00/cubiomes/blob/master/docs/btreegen.py)
+  that ports Mojang's `Climate.RTree.build()` and the relevant subset of
+  `OverworldBiomeBuilder` to Python, enabling reproducible (bit-exact)
+  regeneration of the binary biome trees without an IntelliJ debugger session.
+- **Apple Silicon native build + macOS / Linux CI** producing `.dmg` and
+  `.AppImage` artifacts.
+- **`scripts/build.sh` / `scripts/dist-macos.sh` / `scripts/clean.sh`** for
+  out-of-source builds without polluting the project root.
+
+The cubiomes C library is also forked at
+[mja00/cubiomes](https://github.com/mja00/cubiomes) to host the version
+additions.
 
 
 ## Download
 
-Precompiled binaries can be found in the [releases section](https://github.com/Cubitect/cubiomes-viewer/releases)
-on GitHub. This includes single file executables, which are statically
-linked against [Qt](https://www.qt.io).
+Precompiled binaries can be found in the [releases section](https://github.com/mja00/cubiomes-viewer/releases)
+of this fork (macOS `.dmg` and Linux `.AppImage`), or upstream
+[Cubitect/cubiomes-viewer releases](https://github.com/Cubitect/cubiomes-viewer/releases)
+for the older single-file statically-linked executables.
 
-A Flatpak for the tool is available on
+A Flatpak for the upstream tool is available on
 [Flathub](https://flathub.org/apps/details/com.github.cubitect.cubiomes-viewer).
 
-For Arch Linux users, the tool may be found in the
+For Arch Linux users, the upstream tool may be found in the
 [AUR](https://aur.archlinux.org/packages/cubiomes-viewer) thanks to
 [JakobDev](https://github.com/JakobDev).
 
-Non-PC platforms, such as macOS, are not formally supported, but you can check
-[here](https://github.com/Cubitect/cubiomes-viewer/issues/107) for more
-information on this issue.
+macOS (Apple Silicon) is supported in this fork — see the
+[macOS Release workflow](.github/workflows/macos-release.yaml) for the
+canonical build recipe, or follow
+[`buildguide.md`](buildguide.md#macos) to build locally with `brew install qt`.
 
 
 ## Build from source
 
-Build instructions can be found in the [buildguide](buildguide.md).
+Detailed instructions are in [`buildguide.md`](buildguide.md). On macOS or
+Linux, the quick path is:
+
+```sh
+brew install qt                       # macOS  (or apt install qt6-base-dev on Linux)
+git clone --recursive https://github.com/mja00/cubiomes-viewer.git
+cd cubiomes-viewer
+./scripts/build.sh                    # release build into ./build
+open build/cubiomes-viewer.app        # macOS;  on Linux: ./build/cubiomes-viewer
+```
+
+For a redistributable macOS DMG: `./scripts/dist-macos.sh`. To wipe artifacts:
+`./scripts/clean.sh`.
 
 
 ## Basic feature overview
