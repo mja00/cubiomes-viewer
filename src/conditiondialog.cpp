@@ -17,6 +17,7 @@
 #include <QIntValidator>
 #include <QScrollBar>
 #include <QSpacerItem>
+#include <QStandardItemModel>
 #include <QStandardPaths>
 #include <QTextStream>
 
@@ -717,12 +718,18 @@ void ConditionDialog::updateBiomeSelection()
 
     ui->labelBiomeScale->setText(tr("Sampling scale:"));
     ui->comboScale->setEnabled(false);
+    QStandardItemModel *scaleModel = qobject_cast<QStandardItemModel *>(ui->comboScale->model());
     for (int i = 0, n = ui->comboScale->count(); i < n; i++)
     {
         ui->comboScale->setItemText(i, QString::asprintf("1:%d", 1 << (i*2)));
-        ui->comboScale->setItemData(i, QVariant::Invalid, Qt::UserRole-1);
+        if (scaleModel)
+        {
+            if (QStandardItem *it = scaleModel->item(i))
+                it->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        }
     }
-    // ui->comboScale->setItemData(0, false, Qt::UserRole-1); // disable voronoi
+    // if (scaleModel && scaleModel->item(0))
+    //     scaleModel->item(0)->setFlags(Qt::ItemIsSelectable); // disable voronoi
 
     std::vector<int> available;
 
@@ -733,7 +740,11 @@ void ConditionDialog::updateBiomeSelection()
         {   // disable 1:256 end biomes
             int idx256 = ui->comboScale->findData(QVariant::fromValue(256));
             ui->comboScale->setItemText(idx256, QString("1:256 ") + WARNING_CHAR);
-            ui->comboScale->setItemData(idx256, false, Qt::UserRole-1);
+            if (scaleModel)
+            {
+                if (QStandardItem *it = scaleModel->item(idx256))
+                    it->setFlags(Qt::ItemIsSelectable);
+            }
         }
         for (int i = 0; i < 256; i++)
             if (getDimension(i) == ft.dim)
