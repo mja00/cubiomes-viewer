@@ -11,6 +11,7 @@
 
 #include <map>
 #include <set>
+#include <utility>
 
 
 enum { C_SEED, C_STRUCT, C_COUNT, C_X, C_Z, C_DETAIL }; // columns
@@ -374,7 +375,7 @@ void TabStructures::onBufferTimeout()
         ui->treeQuads->setSortingEnabled(false);
         ui->treeQuads->setUpdatesEnabled(false);
         ui->treeQuads->addTopLevelItems(qbufq);
-        for (QTreeWidgetItem *item: qAsConst(qbufq))
+        for (QTreeWidgetItem *item: std::as_const(qbufq))
             item->setExpanded(true);
         ui->treeQuads->setUpdatesEnabled(true);
         ui->treeQuads->setSortingEnabled(true);

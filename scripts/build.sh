@@ -30,10 +30,12 @@ fi
 
 if [ -n "${JOBS:-}" ]; then
     :
-elif command -v sysctl >/dev/null 2>&1; then
+elif command -v getconf >/dev/null 2>&1 && JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null) && [ -n "$JOBS" ]; then
+    :
+elif command -v nproc >/dev/null 2>&1; then
+    JOBS=$(nproc)
+elif [ "$(uname -s)" = Darwin ] && command -v sysctl >/dev/null 2>&1; then
     JOBS=$(sysctl -n hw.ncpu)
-elif command -v getconf >/dev/null 2>&1; then
-    JOBS=$(getconf _NPROCESSORS_ONLN)
 else
     JOBS=4
 fi

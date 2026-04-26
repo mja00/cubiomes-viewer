@@ -12,6 +12,7 @@
 #include <QTextStream>
 
 #include <unordered_set>
+#include <utility>
 
 void AnalysisBiomes::run()
 {
@@ -110,7 +111,7 @@ void AnalysisBiomes::runStatistics(Generator *g)
     }
 
     int bcnt = 0;
-    for (uint64_t c : qAsConst(idcnt))
+    for (uint64_t c : std::as_const(idcnt))
         bcnt += !!c;
     idcnt[256] = bcnt;
 
@@ -202,7 +203,7 @@ QVariant BiomeTableModel::headerData(int section, Qt::Orientation orientation, i
 
 void BiomeTableModel::insertIds(QSet<int>& nids)
 {
-    for (int id : qAsConst(nids))
+    for (int id : std::as_const(nids))
     {
         QList<int>::iterator it = std::lower_bound(ids.begin(), ids.end(), id, cmp);
         if (it == ids.end() || *it != id)

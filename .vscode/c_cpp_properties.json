@@ -1,0 +1,37 @@
+{
+	"version": 4,
+	"configurations": [
+		{
+			"name": "Linux (qmake / Qt6)",
+			"compilerPath": "/usr/bin/g++",
+			"intelliSenseMode": "linux-gcc-x64",
+			"cppStandard": "c++17",
+			"cStandard": "c17",
+			"defines": [
+				"LUA_USE_POSIX=1",
+				"STRUCT_CONFIG_OVERRIDE=1",
+				"QT_DISABLE_DEPRECATED_UP_TO=0x050F00",
+				"QT_WIDGETS_LIB",
+				"QT_GUI_LIB",
+				"QT_CORE_LIB"
+			],
+			"includePath": [
+				"${workspaceFolder}",
+				"${workspaceFolder}/src",
+				"${workspaceFolder}/build",
+				"/usr/include/qt6",
+				"/usr/include/qt6/QtCore",
+				"/usr/include/qt6/QtGui",
+				"/usr/include/qt6/QtWidgets"
+			],
+			"browse": {
+				"path": [
+					"${workspaceFolder}",
+					"${workspaceFolder}/src",
+					"${workspaceFolder}/build"
+				],
+				"limitSymbolsToIncludedHeaders": true
+			}
+		}
+	]
+}

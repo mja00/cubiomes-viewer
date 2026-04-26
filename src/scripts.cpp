@@ -12,6 +12,7 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 
+#include <utility>
 
 LuaOutput g_lua_output[100];
 
@@ -482,7 +483,7 @@ void LuaHighlighter::highlightBlock(const QString& text)
     else
         setCurrentBlockState(-1);
 
-    for (const Rule &rule : qAsConst(rules))
+    for (const Rule &rule : std::as_const(rules))
     {
         const QString *l = rule.overlay ? &text : &line;
         QRegularExpressionMatch m = rule.pattern.match(*l);

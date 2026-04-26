@@ -1,0 +1,9 @@
+{
+	"files.associations": {
+		"*.a": "asm-intel-x86-generic",
+		"*.heex": "html-eex",
+		"*.tpl": "smarty",
+		"string": "cpp",
+		"algorithm": "cpp"
+	}
+}

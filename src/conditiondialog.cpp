@@ -21,6 +21,7 @@
 #include <QStandardPaths>
 #include <QTextStream>
 
+#include <utility>
 
 #define WARNING_CHAR QChar(0x26A0)
 
@@ -45,11 +46,7 @@ ConditionDialog::ConditionDialog(FormConditions *parent, MapView *mapview, Confi
 
     QString mcs = tr("MC %1", "Minecraft version").arg(mc2str(wi.mc));
     ui->labelMC->setText(mcs);
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-    ui->textEditLua->setTabStopWidth(txtWidth(ui->textEditLua->font(), "    "));
-#else
     ui->textEditLua->setTabStopDistance(QFontMetricsF(ui->textEditLua->font()).horizontalAdvance("    "));
-#endif
     ui->lineSummary->setMinimumWidth(
                 ui->lineSummary->minimumSizeHint().width() +
                 txtWidth(ui->lineSummary->font()) * 26
@@ -427,7 +424,7 @@ ConditionDialog::ConditionDialog(FormConditions *parent, MapView *mapview, Confi
         ui->checkAbandoned->setCheckState(totristate(cond.varflags, Condition::VAR_ABANODONED));
         ui->checkEndShip->setCheckState(totristate(cond.varflags, Condition::VAR_ENDSHIP));
         ui->checkBasement->setCheckState(totristate(cond.varflags, Condition::VAR_BASEMENT));
-        for (VariantCheckBox *cb : qAsConst(variantboxes))
+        for (VariantCheckBox *cb : std::as_const(variantboxes))
         {
             int idx = cb->sp - g_start_pieces;
             cb->setChecked(cond.varstart & (1ULL << idx));
@@ -1161,7 +1158,7 @@ void ConditionDialog::onAccept()
     c.varflags |= tristateFlags(ui->checkEndShip, Condition::VAR_ENDSHIP);
     c.varflags |= tristateFlags(ui->checkBasement, Condition::VAR_BASEMENT);
 
-    for (VariantCheckBox *cb : qAsConst(variantboxes))
+    for (VariantCheckBox *cb : std::as_const(variantboxes))
     {
         if (!cb->isChecked())
             continue;

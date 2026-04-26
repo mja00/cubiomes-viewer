@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 
+#include <utility>
+
 #if defined(_WIN32)
 #include <windows.h>
 short get_term_width()
@@ -141,7 +143,7 @@ bool Headless::loadSession(QString sessionpath, bool reset)
 void Headless::run()
 {
     qOut() << "Condition summary:\n";
-    for (const Condition& cond : qAsConst(session.cv))
+    for (const Condition& cond : std::as_const(session.cv))
         qOut() << cond.summary(false) << "\n";
 
     if (sthread.isdone)

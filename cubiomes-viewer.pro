@@ -6,6 +6,10 @@
 
 QT += core widgets
 
+lessThan(QT_MAJOR_VERSION, 6) {
+    error("cubiomes-viewer requires Qt 6. Use qmake from Qt 6 (on many distros the binary is named qmake6).")
+}
+
 # uncomment to override the profile compiler
 #QMAKE_CC = clang
 #QMAKE_CXX = clang++
@@ -14,22 +18,16 @@ QMAKE_CFLAGS            = -fwrapv -DSTRUCT_CONFIG_OVERRIDE=1
 QMAKE_CXXFLAGS          = $$QMAKE_CFLAGS
 QMAKE_CXXFLAGS_RELEASE  *= -O3 -g3
 
+# Qt 6 requires a C++17 (or newer) toolchain.
+QMAKE_CXXFLAGS += -std=gnu++17
+DEFINES += QT_DISABLE_DEPRECATED_UP_TO=0x050F00
+
 # -finput-charset/-fexec-charset are GNU-only; Apple Clang rejects them.
 # Apple Clang treats source as UTF-8 by default, so the flags are unnecessary on macOS.
 !macx {
     CHARSET             = -finput-charset=UTF-8 -fexec-charset=UTF-8
     QMAKE_CFLAGS       += $$CHARSET
     QMAKE_CXXFLAGS     += $$CHARSET
-}
-
-greaterThan(QT_MAJOR_VERSION, 5) {
-    QMAKE_CXXFLAGS += -std=gnu++17
-    DEFINES += QT_DISABLE_DEPRECATED_UP_TO=0x050F00
-} else {
-    QMAKE_CXXFLAGS += -std=gnu++11
-    equals(QMAKE_CXX, g++) {
-        QMAKE_CXXFLAGS += -Wno-deprecated-copy
-    }
 }
 
 win32: {

@@ -293,12 +293,7 @@ void RangeSlider::wheelEvent(QWheelEvent *e)
     QRect groove = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
 
     int delta = e->angleDelta().y() / 8 / 15;
-    int x;
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    x = e->x() - groove.x();
-#else
-    x = (int)e->position().x() - groove.x();
-#endif
+    int x = (int)e->position().x() - groove.x();
     x = style()->sliderValueFromPosition(vmin, vmax, x, groove.width());
 
     int h = 0;
