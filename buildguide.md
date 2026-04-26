@@ -55,23 +55,48 @@ $ brew install qt
 ```
 This installs Qt 6 (the current Homebrew default; `qt@5` is no longer in
 Homebrew core). The `qmake6` binary will be on `PATH` after `brew link qt`
-runs automatically as part of the install. To build and run on macOS:
+runs automatically as part of the install.
+
+#### Quick path: build scripts
+
+The `scripts/` directory contains thin wrappers around `qmake6` + `make` +
+`macdeployqt` so you don't have to remember the incantations. Builds are
+out-of-source (in `./build/`), keeping the project root clean.
 ```
 $ git clone --recursive https://github.com/Cubitect/cubiomes-viewer.git
 $ cd cubiomes-viewer
-$ qmake6 .
-$ make -j$(sysctl -n hw.ncpu)
-$ open cubiomes-viewer.app
+$ ./scripts/build.sh                  # release build into ./build
+$ open build/cubiomes-viewer.app
 ```
-For a redistributable disk image:
+For a redistributable disk image (runs `macdeployqt` to bundle Qt frameworks
+into the .app, then produces a `.dmg`):
 ```
-$ $(brew --prefix qt)/bin/macdeployqt cubiomes-viewer.app -dmg
+$ ./scripts/dist-macos.sh
 ```
+To wipe build artifacts:
+```
+$ ./scripts/clean.sh
+```
+The build script honors a few env vars: `CONFIG=debug`, `JOBS=N`, `BUILD_DIR=…`.
+
 Unsigned builds may be blocked by Gatekeeper. To launch a local build
 without code signing, strip the quarantine attribute:
 ```
-$ xattr -dr com.apple.quarantine cubiomes-viewer.app
+$ xattr -dr com.apple.quarantine build/cubiomes-viewer.app
 ```
+
+#### Manual path
+
+If you'd rather invoke the tools directly:
+```
+$ qmake6 .
+$ make -j$(sysctl -n hw.ncpu)
+$ open cubiomes-viewer.app
+$ $(brew --prefix qt)/bin/macdeployqt cubiomes-viewer.app -dmg
+```
+Note that `qmake6 .` builds in-source and pollutes the project root with
+`.o` / `moc_*` / `qrc_*` files. The script-based path uses an out-of-source
+`build/` directory instead.
 
 ### Compile Qt from Source
 
