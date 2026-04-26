@@ -45,9 +45,9 @@ you don't need to be signed into GitHub to download them.
 
 | Platform | Artifact | Download |
 |---|---|---|
-| macOS (Apple Silicon, arm64) | `.dmg` | [cubiomes-viewer-macos-arm64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/macos-release/trunk/cubiomes-viewer-macos-arm64.zip) |
-| Linux (x86_64) | `.AppImage` | [cubiomes-viewer-linux-x86_64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/linux-release/trunk/cubiomes-viewer-linux-x86_64.zip) |
-| Windows | folder w/ `.exe` + Qt DLLs | [cubiomes-viewer-win.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/windows-release/trunk/cubiomes-viewer-win.zip) |
+| macOS (Apple Silicon, arm64) | `.dmg` | [cubiomes-viewer-macos-arm64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/macos-release.yaml/trunk/cubiomes-viewer-macos-arm64.zip) |
+| Linux (x86_64) | `.AppImage` | [cubiomes-viewer-linux-x86_64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/linux-release.yaml/trunk/cubiomes-viewer-linux-x86_64.zip) |
+| Windows | folder w/ `.exe` + Qt DLLs | [cubiomes-viewer-win.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/windows-release.yaml/trunk/cubiomes-viewer-win.zip) |
 
 Each download is a `.zip` containing the platform-native artifact (since
 GitHub Actions wraps all artifacts in a zip).
