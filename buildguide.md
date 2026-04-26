@@ -51,8 +51,26 @@ $ sudo dnf install qt5-qtbase-devel qt5-linguist
 ##### macOS
 ```
 $ xcode-select --install
-$ brew install qt@5
-$ brew link qt@5
+$ brew install qt
+```
+This installs Qt 6 (the current Homebrew default; `qt@5` is no longer in
+Homebrew core). The `qmake6` binary will be on `PATH` after `brew link qt`
+runs automatically as part of the install. To build and run on macOS:
+```
+$ git clone --recursive https://github.com/Cubitect/cubiomes-viewer.git
+$ cd cubiomes-viewer
+$ qmake6 .
+$ make -j$(sysctl -n hw.ncpu)
+$ open cubiomes-viewer.app
+```
+For a redistributable disk image:
+```
+$ $(brew --prefix qt)/bin/macdeployqt cubiomes-viewer.app -dmg
+```
+Unsigned builds may be blocked by Gatekeeper. To launch a local build
+without code signing, strip the quarantine attribute:
+```
+$ xattr -dr com.apple.quarantine cubiomes-viewer.app
 ```
 
 ### Compile Qt from Source

@@ -10,10 +10,17 @@ QT += core widgets
 #QMAKE_CC = clang
 #QMAKE_CXX = clang++
 
-CHARSET                 = -finput-charset=UTF-8 -fexec-charset=UTF-8
-QMAKE_CFLAGS            = $$CHARSET -fwrapv -DSTRUCT_CONFIG_OVERRIDE=1
+QMAKE_CFLAGS            = -fwrapv -DSTRUCT_CONFIG_OVERRIDE=1
 QMAKE_CXXFLAGS          = $$QMAKE_CFLAGS
 QMAKE_CXXFLAGS_RELEASE  *= -O3 -g3
+
+# -finput-charset/-fexec-charset are GNU-only; Apple Clang rejects them.
+# Apple Clang treats source as UTF-8 by default, so the flags are unnecessary on macOS.
+!macx {
+    CHARSET             = -finput-charset=UTF-8 -fexec-charset=UTF-8
+    QMAKE_CFLAGS       += $$CHARSET
+    QMAKE_CXXFLAGS     += $$CHARSET
+}
 
 greaterThan(QT_MAJOR_VERSION, 5) {
     QMAKE_CXXFLAGS += -std=gnu++17
@@ -48,6 +55,12 @@ wasm: {
     CONFIG(debug, debug|release): {
         #QMAKE_CFLAGS += -O3 -gsource-map
     }
+}
+
+macx: {
+    ICON                       = rc/icons/cubiomes-viewer.icns
+    QMAKE_INFO_PLIST           = rc/Info.plist
+    QMAKE_TARGET_BUNDLE_PREFIX = com.github.cubitect
 }
 #CONFIG += sanitizer
 #CONFIG += sanitize_undefined

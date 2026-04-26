@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14   # Apple Silicon (arm64)
 
     steps:
       - name: Checkout repo
@@ -24,31 +24,45 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          aqtversion:   '==3.1.*'
-          version:      '6.7.3'
-          archives:     'x86_64 qtbase qttools'
-          cache:        true
+          aqtversion: '==3.1.*'
+          version:    '6.7.3'
+          host:       'mac'
+          target:     'desktop'
+          arch:       'clang_64'
+          modules:    'qttools'
+          cache:      true
 
       - name: Build
         working-directory: ${{env.SOURCE_DIR}}
-        run:  |
-              qmake CONFIG+=release ${{env.SOURCE_DIR}}
-              CFLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" make
+        run: |
+          qmake CONFIG+=release ${{env.SOURCE_DIR}}
+          make -j$(sysctl -n hw.ncpu)
 
       - name: Deploy
         working-directory: ${{env.SOURCE_DIR}}
-        run:  |
-              macdeployqt ${{env.PROG}}.app -dmg -no-plugins
+        run: |
+          macdeployqt ${{env.PROG}}.app -dmg
 
-      - name: Test
+      # TODO: codesign + notarize. Requires repo secrets:
+      #   APPLE_DEVELOPER_ID_CERT (base64 .p12), APPLE_DEVELOPER_ID_PASSWORD,
+      #   APPLE_NOTARY_USER, APPLE_NOTARY_PASSWORD, APPLE_TEAM_ID.
+      # - name: Codesign & notarize
+      #   run: |
+      #     codesign --deep --force --options runtime --timestamp \
+      #       --sign "Developer ID Application: <Name> (<TEAM_ID>)" ${{env.PROG}}.app
+      #     xcrun notarytool submit ${{env.PROG}}.dmg --wait \
+      #       --apple-id "$APPLE_NOTARY_USER" --password "$APPLE_NOTARY_PASSWORD" \
+      #       --team-id "$APPLE_TEAM_ID"
+      #     xcrun stapler staple ${{env.PROG}}.dmg
+
+      - name: Smoke test
         working-directory: ${{env.SOURCE_DIR}}
-        run:  |
-              ./${{env.PROG}}.app/Contents/MacOS/${{env.PROG}} --version
-              otool -L ${{env.PROG}}.app/Contents/MacOS/${{env.PROG}}
+        run: |
+          ./${{env.PROG}}.app/Contents/MacOS/${{env.PROG}} --version
+          otool -L ./${{env.PROG}}.app/Contents/MacOS/${{env.PROG}}
 
       - name: Save build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{env.PROG}}-macos
+          name: ${{env.PROG}}-macos-arm64
           path: ${{env.SOURCE_DIR}}/${{env.PROG}}.dmg
-

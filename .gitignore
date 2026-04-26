@@ -2,3 +2,18 @@ cubiomes-viewer.pro.user
 build
 src/libwinsane/*.o
 **/.directory
+
+# macOS
+.DS_Store
+cubiomes-viewer.app/
+*.dmg
+
+# qmake build output
+/Makefile
+/Makefile.*
+.qmake.stash
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.o
