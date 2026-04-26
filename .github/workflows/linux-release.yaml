@@ -1,0 +1,103 @@
+name: Linux Release
+
+on:
+  push:
+    branches:
+      - 'trunk'
+    tags:
+      - 'v*'
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PROG:         cubiomes-viewer
+  SOURCE_DIR:   ${{github.workspace}}
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04   # pinned LTS: older glibc -> AppImage runs on more distros
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            libgl1-mesa-dev \
+            libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 \
+            libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libxkbcommon0 \
+            libfontconfig1 \
+            libfuse2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version:    '6.7.3'
+          host:       'linux'
+          target:     'desktop'
+          arch:       'linux_gcc_64'
+          modules:    'qttools'
+          cache:      true
+
+      - name: Build
+        working-directory: ${{env.SOURCE_DIR}}
+        run: |
+          qmake CONFIG+=release ${{env.SOURCE_DIR}}
+          make -j$(nproc)
+
+      - name: Smoke test
+        working-directory: ${{env.SOURCE_DIR}}
+        run: |
+          ./${{env.PROG}} --version
+          ldd ./${{env.PROG}}
+
+      - name: Stage AppDir
+        working-directory: ${{env.SOURCE_DIR}}
+        run: |
+          install -Dm755 ${{env.PROG}} AppDir/usr/bin/${{env.PROG}}
+          install -Dm644 etc/com.github.cubitect.cubiomes-viewer.desktop \
+            AppDir/usr/share/applications/com.github.cubitect.cubiomes-viewer.desktop
+          install -Dm644 etc/com.github.cubitect.cubiomes-viewer.metainfo.xml \
+            AppDir/usr/share/metainfo/com.github.cubitect.cubiomes-viewer.metainfo.xml
+          install -Dm644 etc/icon.svg \
+            AppDir/usr/share/icons/hicolor/scalable/apps/com.github.cubitect.cubiomes-viewer.svg
+
+      - name: Build AppImage
+        working-directory: ${{env.SOURCE_DIR}}
+        run: |
+          wget -q -O linuxdeploy.AppImage \
+            https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q -O linuxdeploy-plugin-qt.AppImage \
+            https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy.AppImage linuxdeploy-plugin-qt.AppImage
+
+          # Tell linuxdeploy-plugin-qt where qmake is so it can locate Qt libs.
+          export QMAKE="$(command -v qmake)"
+          # Force VERSION into the output name so artifacts are clearly named.
+          export VERSION="${{github.ref_name}}"
+          ./linuxdeploy.AppImage --appdir AppDir --plugin qt --output appimage
+
+          # Normalize the artifact name (linuxdeploy uses spaces from the .desktop's Name=).
+          mv -v Cubiomes_Viewer*.AppImage ${{env.PROG}}-${VERSION}-x86_64.AppImage \
+            || mv -v *.AppImage ${{env.PROG}}-${VERSION}-x86_64.AppImage
+
+      - name: AppImage smoke test
+        working-directory: ${{env.SOURCE_DIR}}
+        run: |
+          chmod +x ${{env.PROG}}-*-x86_64.AppImage
+          ./${{env.PROG}}-*-x86_64.AppImage --appimage-extract-and-run --version
+
+      - name: Save build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.PROG}}-linux-x86_64
+          path: ${{env.SOURCE_DIR}}/${{env.PROG}}-*-x86_64.AppImage
