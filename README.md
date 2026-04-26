@@ -37,10 +37,27 @@ additions.
 
 ## Download
 
-Precompiled binaries can be found in the [releases section](https://github.com/mja00/cubiomes-viewer/releases)
-of this fork (macOS `.dmg` and Linux `.AppImage`), or upstream
+### Latest builds from `trunk` (no GitHub login required)
+
+These links always resolve to the artifact from the most recent successful
+CI run on `trunk`, proxied through [nightly.link](https://nightly.link/) so
+you don't need to be signed into GitHub to download them.
+
+| Platform | Artifact | Download |
+|---|---|---|
+| macOS (Apple Silicon, arm64) | `.dmg` | [cubiomes-viewer-macos-arm64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/macos-release/trunk/cubiomes-viewer-macos-arm64.zip) |
+| Linux (x86_64) | `.AppImage` | [cubiomes-viewer-linux-x86_64.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/linux-release/trunk/cubiomes-viewer-linux-x86_64.zip) |
+| Windows | folder w/ `.exe` + Qt DLLs | [cubiomes-viewer-win.zip](https://nightly.link/mja00/cubiomes-viewer/workflows/windows-release/trunk/cubiomes-viewer-win.zip) |
+
+Each download is a `.zip` containing the platform-native artifact (since
+GitHub Actions wraps all artifacts in a zip).
+
+### Tagged releases
+
+Tagged releases live in the [releases section](https://github.com/mja00/cubiomes-viewer/releases)
+of this fork; upstream
 [Cubitect/cubiomes-viewer releases](https://github.com/Cubitect/cubiomes-viewer/releases)
-for the older single-file statically-linked executables.
+hosts the older single-file statically-linked executables.
 
 A Flatpak for the upstream tool is available on
 [Flathub](https://flathub.org/apps/details/com.github.cubitect.cubiomes-viewer).
@@ -48,11 +65,6 @@ A Flatpak for the upstream tool is available on
 For Arch Linux users, the upstream tool may be found in the
 [AUR](https://aur.archlinux.org/packages/cubiomes-viewer) thanks to
 [JakobDev](https://github.com/JakobDev).
-
-macOS (Apple Silicon) is supported in this fork — see the
-[macOS Release workflow](.github/workflows/macos-release.yaml) for the
-canonical build recipe, or follow
-[`buildguide.md`](buildguide.md#macos) to build locally with `brew install qt`.
 
 
 ## Build from source
