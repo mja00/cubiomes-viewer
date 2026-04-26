@@ -27,29 +27,33 @@ jobs:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          aqtversion:   '==3.1.*'
-          version:      '5.15.2'
-          host:         'windows'
-          target:       'desktop'
-          arch:         'win64_mingw81'
-          archives:     'x86_64 qtbase qttools'
-          cache:        true
-          setup-python: false
+          aqtversion: '==3.1.*'
+          version:    '6.7.3'
+          host:       'windows'
+          target:     'desktop'
+          arch:       'win64_mingw'
+          # MinGW 13.1.0 is the toolchain Qt 6.7.x ships with.
+          # install-qt-action adds the tool's bin dir to PATH automatically.
+          tools:      'tools_mingw1310'
+          # qttools (lrelease, lupdate, etc.) is shipped as an archive of the
+          # base install on Qt 6, not a selectable module. The default
+          # archives list already includes it; do not pass `modules: qttools`.
+          cache:      true
 
       - name: Build
         working-directory: ${{env.SOURCE_DIR}}
         run:  |
               qmake CONFIG+=release ${{env.SOURCE_DIR}}
-              mingw32-make
+              mingw32-make -j%NUMBER_OF_PROCESSORS%
               
       - name: Deploy
         working-directory: ${{env.SOURCE_DIR}}
         run:  |
               mkdir ${{env.PROG}}
               copy ${{env.SOURCE_DIR}}\release\${{env.PROG}}.exe ${{env.PROG}}
-              windeployqt --dir ${{env.PROG}} ${{env.SOURCE_DIR}}\release\${{env.PROG}}.exe --compiler-runtime --no-translations --no-system-d3d-compiler --no-opengl-sw --no-angle
+              windeployqt --dir ${{env.PROG}} ${{env.SOURCE_DIR}}\release\${{env.PROG}}.exe --compiler-runtime --no-translations --no-system-d3d-compiler --no-opengl-sw
               ${{env.SOURCE_DIR}}\${{env.PROG}}\${{env.PROG}}.exe --version
 
       - name: Save build artifact
